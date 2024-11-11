@@ -1,5 +1,3 @@
-// proper running code
-
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
@@ -19,11 +17,14 @@ import {
   UPDATE_CAL_STATUS_URL,
   GET_GAUGE_DATA_URL,
   DELETE_GAUGE_DATA_URL,
-  UPDATE_GAUGE_DATA_URL
+  UPDATE_GAUGE_DATA_URL,
+  GET_CAL_MAILER_LIST_URL,
+  DELETE_CAL_MAILER_URL,
+  UPDATE_CAL_MAILER_URL,
 } from '../../../utils/apiUrls';
 import { BsPencilSquare, BsTrash } from 'react-icons/bs';
 
-const ITEMS_PER_PAGE = 8; // Number of items per page
+const ITEMS_PER_PAGE = 10; // Number of items per page
 
 const CalEntryTable = () => {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ const CalEntryTable = () => {
       url = GET_CAL_STATUS_URL; // Handle any other cases if needed
     } else if (tableType === 'data'){
       url = GET_GAUGE_DATA_URL; // Handle any other cases if needed
+    } else if (tableType === 'mailerlist'){
+      url = GET_CAL_MAILER_LIST_URL; // Handle any other cases if needed
     }
     
     if (url) {
@@ -69,7 +72,6 @@ const CalEntryTable = () => {
     }
   };
 
-
   useEffect(() => {
     if (showTable) {
       fetchTableData(selectedTable);
@@ -77,7 +79,6 @@ const CalEntryTable = () => {
   }, [showTable, selectedTable]);
 
   const handleShowTable = () => setShowTable(true);
-  const handleHideTable = () => setShowTable(false);
   
   const handleTableChange = (e) => {
     setSelectedTable(e.target.value);
@@ -94,15 +95,17 @@ const CalEntryTable = () => {
   const handleDelete = async (id) => {
     let url;
     if (selectedTable === 'calibration') {
-      url = `${DELETE_CAL_AGENCY_URL}/${id}/`;
+      url = `${DELETE_CAL_AGENCY_URL}${id}/`;
     } else if (selectedTable === 'gauge') {
-      url = `${DELETE_GAUGE_TYPE_URL}/${id}/`;
+      url = `${DELETE_GAUGE_TYPE_URL}${id}/`;
     } else if (selectedTable === 'location') {
-      url = `${DELETE_CAL_LOCATION_URL}/${id}/`; // Delete URL for Calibration Location
+      url = `${DELETE_CAL_LOCATION_URL}${id}/`; // Delete URL for Calibration Location
     } else if (selectedTable === 'status') {
-      url = `${DELETE_CAL_STATUS_URL}/${id}/`; // Delete URL for Calibration Location
+      url = `${DELETE_CAL_STATUS_URL}${id}/`; // Delete URL for Calibration Location
     } else if (selectedTable === 'data') {
-      url = `${DELETE_GAUGE_DATA_URL}/${id}/`; // Delete URL for Calibration Location
+      url = `${DELETE_GAUGE_DATA_URL}${id}/`; // Delete URL for Calibration Location
+    } else if (selectedTable === 'data') {
+      url = `${DELETE_CAL_MAILER_URL}${id}/`; // Delete URL for Calibration Location
     } 
     
     if (url) {
@@ -129,15 +132,17 @@ const CalEntryTable = () => {
   const handleSave = async (id) => {
     let url;
     if (selectedTable === 'calibration') {
-      url = `${UPDATE_CAL_AGENCY_URL}/${id}/`;
+      url = `${UPDATE_CAL_AGENCY_URL}${id}/`;
     } else if (selectedTable === 'gauge') {
-      url = `${UPDATE_GAUGE_TYPE_URL}/${id}/`;
+      url = `${UPDATE_GAUGE_TYPE_URL}${id}/`;
     } else if (selectedTable === 'location') {
-      url = `${UPDATE_CAL_LOCATION_URL}/${id}/`; // Update URL for Calibration Location
-    } else if (selectedTable === 'location') {
-      url = `${UPDATE_CAL_STATUS_URL}/${id}/`; // Update URL for Calibration Location
-    } else if (selectedTable === 'location') {
-      url = `${UPDATE_GAUGE_DATA_URL}/${id}/`; // Update URL for Calibration Location
+      url = `${UPDATE_CAL_LOCATION_URL}${id}/`; // Update URL for Calibration Location
+    } else if (selectedTable === 'status') {
+      url = `${UPDATE_CAL_STATUS_URL}${id}/`; // Update URL for Calibration Status
+    } else if (selectedTable === 'data') {
+      url = `${UPDATE_GAUGE_DATA_URL}${id}/`; // Update URL for Gauge Data
+    } else if (selectedTable === 'data') {
+      url = `${UPDATE_CAL_MAILER_URL}${id}/`; // Update URL for Gauge Data
     }
     
     if (url) {
@@ -179,53 +184,111 @@ const CalEntryTable = () => {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // Dynamic Table Rendering
-  const renderTable = () => {
-    if (paginatedData.length === 0) {
-      return <p>No data available.</p>;
-    }
+  // Define the desired order for the Gauge Data table
+const gaugeDataOrder = ['id', 'gauge_type_id', 'gauge_id_no', 'gauges']; // Replace these with your actual column names
 
-    return (
-      <div style={{ overflowX: 'auto' }}>
-        <table className="table table-striped table-bordered">
+// Reorder columns for the Gauge Data table
+const reorderColumnsForGaugeData = (data, headerNames) => {
+  const reorderedHeaders = gaugeDataOrder.concat(
+    headerNames.filter((header) => !gaugeDataOrder.includes(header))
+  );
+  
+  const reorderedData = data.map((row) => {
+    const reorderedRow = {};
+    reorderedHeaders.forEach((header) => {
+      reorderedRow[header] = row[header];
+    });
+    return reorderedRow;
+  });
+
+  return { reorderedData, reorderedHeaders };
+};
+
+// Check if the column is non-editable (first four columns in Gauge Data)
+const isColumnEditable = (header, index) => {
+  // For Gauge Data table, make the first four columns non-editable
+  if (selectedTable === 'data' && gaugeDataOrder.includes(header) && index < 4) {
+    return false; // Make non-editable
+  }
+  return true; // Other columns are editable
+};
+
+// Dynamic Table Rendering
+const renderTable = () => {
+  if (paginatedData.length === 0) {
+    return <p>No data available.</p>;
+  }
+
+  // If the selected table is "Gauge Data", reorder the columns
+  let displayedData = paginatedData;
+  let displayedHeaders = tableData.header_names;
+
+  if (selectedTable === 'data') {
+    const reordered = reorderColumnsForGaugeData(paginatedData, tableData.header_names);
+    displayedData = reordered.reorderedData;
+    displayedHeaders = reordered.reorderedHeaders;
+  }
+
+  const isTableOverflowing = (data, headers) => {
+    const maxRowsBeforeOverflow = 10; // Set limit based on your vertical space
+    return data.length > maxRowsBeforeOverflow;
+  };
+  
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '80vh', padding: '10px' }}>
+      {/* Allow horizontal scrolling but avoid vertical scroll */}
+      <div style={{ flexGrow: 1, overflowX: 'auto', }}>
+        <table 
+          className="table table-striped table-bordered"
+          style={{
+            width: '100%',
+            tableLayout: 'auto', // Let table width adjust for overflowed columns
+            fontSize: isTableOverflowing(displayedData, displayedHeaders) ? '0.85rem' : '1rem',
+          }}
+        >
           <thead>
             <tr>
-              {tableData.header_names.map((header, index) => (
-                <th key={index}>{header}</th>
+              {displayedHeaders.map((header, index) => (
+                <th key={index} style={{ padding: '10px', whiteSpace: 'nowrap' }}> {/* Avoid breaking columns */}
+                  {header}
+                </th>
               ))}
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedData.map((row, rowIndex) => (
+            {displayedData.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {tableData.header_names.map((header, colIndex) => (
-                  <td key={colIndex}>
-                    {editingEntry === row.id ? (
+                {displayedHeaders.map((header, colIndex) => (
+                  <td key={colIndex} style={{ padding: '10px', whiteSpace: 'nowrap' }}>
+                    {editingEntry === row.id && isColumnEditable(header, colIndex) ? (
                       <input
                         type="text"
                         name={header}
                         value={editedData[header] || ''}
                         onChange={handleChange}
                         className="form-control form-control-sm"
+                        style={{ fontSize: '1rem' }}
                       />
                     ) : (
                       row[header]
                     )}
                   </td>
                 ))}
-                <td>
+                <td style={{ padding: '10px' }}>
                   {editingEntry === row.id ? (
                     <>
                       <button
                         className="btn btn-success btn-sm me-2"
-                        onClick={() => handleSave(row.id)} // Save changes
+                        onClick={() => handleSave(row.id)}
+                        style={{ fontSize: '1rem' }}
                       >
                         Save
                       </button>
                       <button
                         className="btn btn-secondary btn-sm"
-                        onClick={handleCancel} // Cancel editing
+                        onClick={handleCancel}
+                        style={{ fontSize: '1rem' }}
                       >
                         Cancel
                       </button>
@@ -249,71 +312,93 @@ const CalEntryTable = () => {
           </tbody>
         </table>
       </div>
-    );
+  
+      {/* Pagination Controls */}
+      <nav style={{ marginTop: 'auto' }}>
+        <ul className="pagination justify-content-center">
+          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+          </li>
+          {[...Array(totalPages)].slice(Math.max(0, currentPage - 2), currentPage + 1).map((_, index) => {
+            const page = currentPage - 1 + index;
+            return (
+              <li key={page} className={`page-item ${currentPage === page + 1 ? 'active' : ''}`}>
+                <button className="page-link" onClick={() => handlePageChange(page + 1)}>
+                  {page + 1}
+                </button>
+              </li>
+            );
+          })}
+          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>Next</button>
+          </li>
+          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+            <button className="page-link" onClick={() => handlePageChange(totalPages)}>Last</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  );
+  
+};
+
+  const handleCreateNewPoint = () => {
+    // Navigate to create new point page
+    navigate('/cal_agency_newentry', { state: { selectedTable } });
   };
 
   return (
-    <div className="d-flex flex-column align-items-center mt-4">
-      {/* Dropdown, Search and Button container */}
-      <div className="d-flex align-items-center mb-3">
-        <select
-          className="form-select form-select-sm me-2"
-          aria-label="Select Table"
-          style={{ width: '150px' }}
-          onChange={handleTableChange}
-        >
-          <option value="calibration">Calibration Table</option>
-          <option value="gauge">Gauge Table</option>
-          <option value="location">Calibration Location</option>
-          <option value="status">Calibration Status</option>
-          <option value="data">Gauge Data</option>
+    <div className="container-fluid mt-2"> {/* Increased margin at the top */}
+      <div className="row mb-3 align-items-center">
+        {/* Dropdown Box */}
+        <div className="col-md-3">
+          <select className="form-select" value={selectedTable} onChange={handleTableChange}>
+            <option value="calibration">Calibration Agency</option>
+            <option value="gauge">Gauge Type</option>
+            <option value="location">Calibration Location</option>
+            <option value="status">Calibration Status</option>
+            <option value="data">Gauge Data</option>
+            <option value="mailerlist">Mailer List</option>
+          </select>
+        </div>
 
-        </select>
-        <button className="btn btn-primary btn-sm me-2" onClick={handleShowTable}>
-          Show Table
-        </button>
-        <button className="btn btn-secondary btn-sm me-2" onClick={handleHideTable}>
-          Hide Table
-        </button>
-        <button className="btn btn-success btn-sm" onClick={() => navigate('/cal_agency_newentry')}>
-          Create New Entry
-        </button>
+        {/* Search Box */}
+        <div className="col-md-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-        {/* Search bar */}
-        <input
-          type="text"
-          className="form-control form-control-sm me-2"
-          style={{ width: '200px' }}
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        {/* Show Table Button */}
+        <div className="col-md-2 d-flex justify-content-end">
+          <button className="btn btn-primary btn-sm me-2" onClick={handleShowTable}> {/* Small button size */}
+            Show Table
+          </button>
+        </div>
+
+        {/* Create New Point Button */}
+        <div className="col-md-2 d-flex justify-content-end">
+          <button className="btn btn-secondary btn-sm" onClick={handleCreateNewPoint}> {/* Small button size */}
+            Create New Point
+          </button>
+        </div>
       </div>
 
-      {/* Container for the dynamic table */}
+      {/* Table Section */}
       {showTable && (
-        <div className="border border-secondary rounded p-3" style={{ width: '90%', maxWidth: '800px', backgroundColor: '#f8f9fa' }}>
-          {renderTable()}
-
-          {/* Pagination controls */}
-          <nav aria-label="Page navigation example">
-            <ul className="pagination justify-content-center">
-              {[...Array(totalPages)].map((_, index) => (
-                <li
-                  key={index}
-                  className={`page-item ${index + 1 === currentPage ? 'active' : ''}`}
-                >
-                  <button className="page-link" onClick={() => handlePageChange(index + 1)}>
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
+        <div className="row">
+          <div className="col-12"> {/* Ensures the table takes full width */}
+            {renderTable()}
+          </div>
         </div>
       )}
     </div>
-  );
+);
+
 };
 
 export default CalEntryTable;

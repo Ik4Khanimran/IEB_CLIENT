@@ -26,17 +26,14 @@ import Assemblyopresult from './component/htmlpage/atp/assemblyopresult'
 import CalAgencyTable from './component/htmlpage/quality/cal_agency_table'; // Adjust the path accordingly
 
 import NewEntryForm from './component/htmlpage/quality/cal_agency_newentry';
-
-
-
-
-
+import CalReport from './component/htmlpage/quality/cal_report';
+import CalHmeReport from './component/htmlpage/quality/cal_hme_report';
+import CalReportResult from './component/htmlpage/quality/cal_view_report';
+// import CalMailerList from './component/htmlpage/quality/cal_mailer_list';
+// import CreateMailerEntry from './component/htmlpage/quality/cal_mailer_newentry';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [selectedTable, setSelectedTable] = useState(''); // Define selectedTable state
-  // const navigate = useNavigate(); // Use useNavigate for navigation
-
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -45,10 +42,6 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
   };
-
- 
-
-  
 
   return (
     <BrowserRouter>
@@ -74,6 +67,9 @@ function App() {
         <Route path="/updatedatabase" element={isLoggedIn ? <Layout><UpdateBD /></Layout> : <Navigate to="/" replace />} />
         <Route path="/user" element={isLoggedIn ? <Layout><User /></Layout> : <Navigate to="/" replace />} />
         <Route path="/cal_agency_table" element={isLoggedIn ? <Layout><CalAgencyTable /></Layout> : <Navigate to="/" replace />} />
+        <Route path="/cal_hme_report" element={isLoggedIn ? <Layout><CalHmeReport /></Layout> : <Navigate to="/" replace />} />
+
+        {/* <Route path="/cal_hme_report"  element={<CalHmeReport />} /> */}
 
         <Route path="/newtab" element={<NewTabPage />} />
         <Route path="/openchecksheet" element={<OpenChecksheet />} />
@@ -97,6 +93,10 @@ function App() {
         <Route path="/create-new-location" element={<NewEntryForm selectedTable="location" />} />
         <Route path="/create-new-status" element={<NewEntryForm selectedTable="status" />} />
         <Route path="/create-new-data" element={<NewEntryForm selectedTable="data" />} />
+        <Route path="/cal_report" element={<CalReport />} />
+        <Route path="/cal_view_report" element={<CalReportResult />} />
+        {/* <Route path="/cal_mailer_list" element={<CalMailerList />} />
+        <Route path="/cal_mailer_newentry" element={<CreateMailerEntry />} /> */}
         
 
       </Routes>

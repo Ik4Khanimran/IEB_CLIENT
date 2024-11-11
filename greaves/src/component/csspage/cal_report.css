@@ -1,0 +1,100 @@
+.calibration-card {
+    width: 90%;
+    margin: 0 auto;
+    border: 2px solid #000;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+  }
+  
+  .logo-section h2 {
+    font-size: 24px;
+    color: #0073e6;
+  }
+  
+  .title-section h2 {
+    text-align: center;
+    font-size: 18px;
+  }
+  
+  .doc-info {
+    text-align: right;
+    font-size: 12px;
+  }
+  
+  .calibration-info {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .calibration-frequency {
+    flex: 1;
+  }
+  
+  .gauge-details, .additional-details {
+    flex: 1;
+  }
+  
+  .calibration-frequency, .gauge-details div, .additional-details div {
+    margin-bottom: 10px;
+  }
+  
+  .calibration-frequency p, .gauge-details p, .additional-details p {
+    font-size: 14px;
+  }
+  
+  table.calibration-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  table.calibration-table th, table.calibration-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  table.calibration-table input {
+    width: 100%;
+    border: none;
+    text-align: center;
+  }
+
+  .table td {
+    word-wrap: break-word; /* Allows long words to be broken and wrapped onto the next line */
+    max-width: 200px; /* Set a maximum width for the cell */
+}
+
+.button-space {
+  margin-right: 10px; /* Adjust the spacing as needed */
+}
+
+.table {
+  width: 100%; /* Make tables take full width */
+}
+
+.table-wrapper {
+  margin: 1rem 0; /* Add some spacing between tables */
+}
+
+.fixed-table {
+  width: 100%;
+  table-layout: fixed; /* Ensures consistent column widths */
+}
+
+.fixed-table th,
+.fixed-table td {
+  overflow: hidden; /* Prevents overflow */
+  text-overflow: ellipsis; /* Add ellipsis if text is too long */
+  white-space: nowrap; /* Prevents wrapping */
+}
+
+  

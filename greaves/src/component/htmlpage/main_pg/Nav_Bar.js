@@ -40,9 +40,10 @@ const NavBar = ({ activeTab }) => {
                 <NavDropdown.Item as={Link} to="/calibration/cal_dashboard" className={activeTab === 'calibration-dashboard' ? 'active' : ''}>
                   Dashboard
                 </NavDropdown.Item>
-                <NavDropdown.Item as={Link} to="/calibration/report" className={activeTab === 'calibration-report' ? 'active' : ''}>
+                <NavDropdown.Item as={Link} to="/cal_hme_report" className={activeTab === 'cal_hme_report' ? 'active' : ''}>
                   Calibration Report
                 </NavDropdown.Item>
+
                 <NavDropdown.Item as={Link} to="/cal_agency_table" className={activeTab === 'calibration-table' ? 'active' : ''}>
                   Calibration Table
                 </NavDropdown.Item>

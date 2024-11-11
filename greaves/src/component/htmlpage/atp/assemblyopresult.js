@@ -118,7 +118,8 @@ const Assemblyopresult = () => {
                     <th>Emp Id</th>
                     <td>{userId}</td>
                     <th>Date & Time</th>
-                    <td>{new Date(resultData.time_stamp).toLocaleString()}</td>
+                    <td>{resultData?.timestamp ? new Date(resultData.timestamp).toLocaleString() : 'N/A'}</td>
+                    {/* <td>{new Date(resultData.time_stamp).toLocaleString()}</td> */}
                   </tr>
                 </>
                 ) : error ? (

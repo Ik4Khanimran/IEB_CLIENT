@@ -107,3 +107,19 @@ h2 {
 .delete-button:hover {
     background-color: #c82333;
 }
+
+.table-responsive {
+    overflow-x: auto;
+    white-space: nowrap; /* Prevent wrapping of table content */
+  }
+  
+  table {
+    width: 100%; /* Ensure the table takes up full width */
+    min-width: 1200px; /* Adjust the minimum width as per the number of columns */
+  }
+  
+  .table-alignment {
+    max-width: 85%; /* Ensure the tables have the same width */
+    margin: 0 auto; /* Center the tables */
+  }
+  

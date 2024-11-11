@@ -1,8 +1,8 @@
 // apiUrls.js 
 
 const MAIN_DOMAIN = 'http://127.0.0.1:8000';
- //const MAIN_DOMAIN = 'http://localhost:81';
-// const MAIN_DOMAIN = 'http://10.24.0.104:81';
+//const MAIN_DOMAIN = 'http://localhost:81';
+// const MAIN_DOMAIN = 'http://10.24.0.104:81';           //build
 // const MAIN_DOMAIN = 'http://localhost:8000';
 
 const APP_NAMES = {
@@ -61,9 +61,26 @@ export const DELETE_CAL_STATUS_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete
 export const UPDATE_CAL_STATUS_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/edit_cal_status/`;
 
 export const ADD_GAUGE_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/add_gauge_table/`;
-export const GET_GAUGE_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete_gauge_table/`;
-export const DELETE_GAUGE_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete_cal_status/`;
+export const GET_GAUGE_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_gauge_table/`;
+export const DELETE_GAUGE_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete_gauge_table/`;
 export const UPDATE_GAUGE_DATA_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/edit_gauge_table/`;
+
+export const GET_CAL_DATE_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_calibration_date/`;
+export const GET_LEAST_COUNT_FREQ_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_least_count_frequency/`;
+export const GET_LOCATION_GNAME_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_location_gauge_name/`;
+export const SUBMIT_CALIBRATION_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/submit_calibration_report/`;
+export const GET_CAL_REPORT_RESULT_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_cal_report_result/`;
+
+export const GET_CAL_MAILER_LIST_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_cal_mailer_list/`;
+export const DELETE_CAL_MAILER_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete_cal_mailer_entry/`;
+export const UPDATE_CAL_MAILER_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/edit_cal_mailer_list/`;
+export const CAL_MAILER_NEWENTRY_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/add_cal_mail_entry/`;
+
+export const GET_GAUGEID_MAIL_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_gaugeid_mail/`;
+export const DELETE_GAUGEID_MAIL_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/delete_gaugeid_mail/`;
+export const UPDATE_GAUGEID_MAIL_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/edit_gaugeid_mail/`;
+export const ADD_GAUGEID_MAIL_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/add_gaugeid_mail/`;
+
 
 
 // Add more URLs as needed
