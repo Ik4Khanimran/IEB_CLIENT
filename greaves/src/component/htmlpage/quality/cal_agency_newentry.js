@@ -159,7 +159,6 @@ const NewEntryForm = () => {
         setFieldNames([]);
         break;
     }
-
   }, [selectedTable]);
 
   useEffect(() => {
@@ -237,43 +236,50 @@ const NewEntryForm = () => {
   return (
     <div className="container">
       <h1>New Entry Form for {selectedTable}</h1>
-      <form onSubmit={handleSubmit}>
-        {fieldNames.map((field, index) => (
-          <div className="mb-3" key={index}>
-            <label className="form-label">{field.label}</label>
-            {field.name === 'gauges' ? (
-              <select name={field.name} onChange={handleChange} className="form-control">
-                <option value="">Select Gauge</option>
-                {gaugeTypes.map((gauge) => (
-                  <option key={gauge.id} value={gauge.id}>
-                    {gauge.gauge_name}
-                  </option>
-                ))}
-              </select>
-            ) : field.name === 'mail_id' || field.name === 'name' ? (
-              <input
-                type="text"
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                className="form-control"
-              />
-            ) : (
-              <input
-                type="text"
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                className="form-control"
-              />
-            )}
-          </div>
-        ))}
+      <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+        <form onSubmit={handleSubmit}>
+          {fieldNames.map((field, index) => (
+            <div className="mb-3" key={index}>
+              <label className="form-label">{field.label}</label>
+              
+              {/* Dropdown for fields like act_1, act_2, informer_1, etc. */}
+              {field.name === 'act_1' || field.name === 'act_2' || field.name === 'act_3' || 
+                field.name === 'informer_1' || field.name === 'informer_2' || field.name === 'informer_3' || 
+                field.name === 'authenticator_1' || field.name === 'authenticator_2' ? (
+                <select name={field.name} onChange={handleChange} className="form-control">
+                  <option value="">Select Mail ID</option>
+                  {mailerList.map((mailer) => (
+                    <option key={mailer.id} value={mailer.mail_id}>
+                      {mailer.mail_id}
+                    </option>
+                  ))}
+                </select>
+              ) : field.name === 'gauges' ? (
+                <select name={field.name} onChange={handleChange} className="form-control">
+                  <option value="">Select Gauge</option>
+                  {gaugeTypes.map((gauge) => (
+                    <option key={gauge.id} value={gauge.id}>
+                      {gauge.gauge_name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  className="form-control"
+                />
+              )}
+            </div>
+          ))}
 
-        <div className="mb-3">
-          <button type="submit" className="btn btn-primary">Submit</button>
-        </div>
-      </form>
+          <div className="mb-3">
+            <button type="submit" className="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
 
       {responseMessage && <div className="alert alert-info">{responseMessage}</div>}
     </div>

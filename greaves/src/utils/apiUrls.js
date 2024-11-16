@@ -29,6 +29,7 @@ export const USER_DATA_DELETE_URL = `${MAIN_DOMAIN}/${APP_NAMES.User}/createuser
 export const USER_NEW_ENTRY_URL = `${MAIN_DOMAIN}/${APP_NAMES.User}/createusertable/`;
 export const SAVE_USER_ENTRY_URL = `${MAIN_DOMAIN}/${APP_NAMES.User}/save_new_entry/`;
 export const HOME_GET_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Dashboard}/get_data/`;
+export const HOME_DOWNLOAD_DATA_URL = `${MAIN_DOMAIN}/${APP_NAMES.Dashboard}/download_data/`;
 export const AUDIT_REMARK_URL = `${MAIN_DOMAIN}/${APP_NAMES.ATP}/audit_checksheet/`;
 export const OPN_CHECKSHEET_AUDIT_URL = `${MAIN_DOMAIN}/${APP_NAMES.ATP}/opn_audit_checksheet/`;
 export const REWORK_REMARK_URL = `${MAIN_DOMAIN}/${APP_NAMES.ATP}/rework_checksheet/`;

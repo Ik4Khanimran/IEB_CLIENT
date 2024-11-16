@@ -3,6 +3,8 @@ import { GET_GAUGE_DATA_URL, GET_LOCATION_GNAME_URL } from '../../../utils/apiUr
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaPen, FaEye } from 'react-icons/fa';  // Importing the icons
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../csspage/cal_agency_table.css";
 
 const CalHmeReport = () => {
   const [error, setError] = useState(null);
@@ -49,8 +51,9 @@ const CalHmeReport = () => {
   };
 
   const handleViewReport = (gauge) => {
+    // Build the URL with state as query params or path if needed
     const url = `/cal_report?gaugeId=${gauge.gauge_id_no}`; 
-    window.open(url, '_blank');
+    window.open(url, '_blank');  // '_blank' opens the URL in a new tab
   };
 
   const handleViewFilledReport = async (gaugeId) => {
@@ -59,7 +62,7 @@ const CalHmeReport = () => {
       const { gauges: gaugeName, location: gaugeLocation } = response.data;
 
       const url = `/cal_view_report?gaugeId=${gaugeId}&gaugeName=${gaugeName}&gaugeLocation=${gaugeLocation}`;
-      window.open(url, '_blank');
+      window.open(url, '_blank');  // Open the report in a new tab
     } catch (error) {
       console.error("Error fetching gauge details:", error);
     }
@@ -108,10 +111,10 @@ const CalHmeReport = () => {
                     onClick={() => handleViewReport(row)} 
                     style={{ marginRight: '20px' }}
                   >
-                    <FaPen style={{ marginRight: '5px', color: '#28a745' }} />
+                    <FaPen style={{ marginRight: '5px' }} /> 
                   </button>
                   <button onClick={() => handleViewFilledReport(row.gauge_id_no)}>
-                    <FaEye style={{ marginRight: '5px', color: '#007bff' }} />
+                    <FaEye style={{ marginRight: '5px' }} /> 
                   </button>
                 </td>
               </tr>
@@ -120,29 +123,34 @@ const CalHmeReport = () => {
         </table>
       </div>
 
-      <div className="pagination">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-          Previous
-        </button>
+      <div className="pagination-container">
+  <div className="pagination">
+    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+      Previous
+    </button>
 
-        {pageNumbers.map((number) => (
-          <button
-            key={number}
-            onClick={() => handlePageChange(number)}
-            className={currentPage === number ? 'active' : ''}
-          >
-            {number}
-          </button>
-        ))}
+    {/* Center the page numbers */}
+    <div className="page-numbers">
+      {pageNumbers.map((number) => (
+        <button
+          key={number}
+          onClick={() => handlePageChange(number)}
+          className={currentPage === number ? 'active' : ''}
+        >
+          {number}
+        </button>
+      ))}
+    </div>
 
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-          Next
-        </button>
-        
-        <button onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages}>
-          Last
-        </button>
-      </div>
+    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+      Next
+    </button>
+
+    <button onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages}>
+      Last
+    </button>
+  </div>
+</div>
     </div>
   );
 };

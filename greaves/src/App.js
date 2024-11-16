@@ -29,6 +29,7 @@ import NewEntryForm from './component/htmlpage/quality/cal_agency_newentry';
 import CalReport from './component/htmlpage/quality/cal_report';
 import CalHmeReport from './component/htmlpage/quality/cal_hme_report';
 import CalReportResult from './component/htmlpage/quality/cal_view_report';
+import CalDashboard from './component/htmlpage/quality/cal_dashboard';
 // import CalMailerList from './component/htmlpage/quality/cal_mailer_list';
 // import CreateMailerEntry from './component/htmlpage/quality/cal_mailer_newentry';
 
@@ -68,6 +69,7 @@ function App() {
         <Route path="/user" element={isLoggedIn ? <Layout><User /></Layout> : <Navigate to="/" replace />} />
         <Route path="/cal_agency_table" element={isLoggedIn ? <Layout><CalAgencyTable /></Layout> : <Navigate to="/" replace />} />
         <Route path="/cal_hme_report" element={isLoggedIn ? <Layout><CalHmeReport /></Layout> : <Navigate to="/" replace />} />
+        <Route path="/cal_dashboard" element={isLoggedIn ? <Layout><CalDashboard /></Layout> : <Navigate to="/" replace />} />
 
         {/* <Route path="/cal_hme_report"  element={<CalHmeReport />} /> */}
 
@@ -95,8 +97,8 @@ function App() {
         <Route path="/create-new-data" element={<NewEntryForm selectedTable="data" />} />
         <Route path="/cal_report" element={<CalReport />} />
         <Route path="/cal_view_report" element={<CalReportResult />} />
-        {/* <Route path="/cal_mailer_list" element={<CalMailerList />} />
-        <Route path="/cal_mailer_newentry" element={<CreateMailerEntry />} /> */}
+        {/* <Route path="/cal_dashboard" element={<CalDashboard />} /> */}
+        
         
 
       </Routes>

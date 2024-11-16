@@ -122,4 +122,40 @@ h2 {
     max-width: 85%; /* Ensure the tables have the same width */
     margin: 0 auto; /* Center the tables */
   }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center; /* Center the pagination horizontally */
+    width: 100%;
+    margin-top: 20px; /* Adds some space above the pagination */
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center; /* Centers the entire pagination content */
+    align-items: center;
+    gap: 10px; /* Adds space between buttons */
+  }
+  
+  .page-numbers {
+    display: flex;
+    justify-content: center; /* Centers the page numbers */
+    gap: 5px; /* Adds spacing between page number buttons */
+  }
+  
+  .pagination button {
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .pagination button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .pagination button:disabled {
+    background-color: #e0e0e0;
+    cursor: not-allowed;
+  }
   

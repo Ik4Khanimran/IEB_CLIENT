@@ -15,6 +15,7 @@ import '../../csspage/styles.css';
 import Logout from '../common/logout';
 import CalHmeReport from '../quality/cal_hme_report';
 import CalMailerList from '../quality/cal_mailer_list';
+import CalDashboard from '../quality/cal_dashboard';
 // import Table from '../quality/table';
 
 const Layout = () => {
@@ -32,7 +33,8 @@ const Layout = () => {
     '/logout': <Logout />,
     '/cal_agency_table': <CalAgencyTable />,
     '/cal_hme_report': <CalHmeReport />,
-    '/cal_mailer_list': <CalMailerList />
+    '/cal_mailer_list': <CalMailerList />,
+    '/cal_dashboard': <CalDashboard />
     // '/table' : <Table/>
     // Add more routes here
   };

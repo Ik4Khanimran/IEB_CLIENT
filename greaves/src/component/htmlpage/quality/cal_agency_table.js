@@ -29,8 +29,7 @@ const ITEMS_PER_PAGE = 10; // Number of items per page
 const CalEntryTable = () => {
   const navigate = useNavigate();
 
-  const [showTable, setShowTable] = useState(false);
-  const [selectedTable, setSelectedTable] = useState('calibration');
+  const [selectedTable, setSelectedTable] = useState('data');
   const [tableData, setTableData] = useState({ data: [], header_names: [] });
   const [editingEntry, setEditingEntry] = useState(null);
   const [editedData, setEditedData] = useState({});
@@ -72,19 +71,16 @@ const CalEntryTable = () => {
     }
   };
 
+  // Fetch the data when selectedTable changes
   useEffect(() => {
-    if (showTable) {
-      fetchTableData(selectedTable);
-    }
-  }, [showTable, selectedTable]);
-
-  const handleShowTable = () => setShowTable(true);
-  
-  const handleTableChange = (e) => {
-    setSelectedTable(e.target.value);
+    fetchTableData(selectedTable);
     setCurrentPage(1); // Reset to the first page when changing table
     setEditingEntry(null); // Reset editing state
     setEditedData({}); // Clear edited data
+  }, [selectedTable]);
+
+  const handleTableChange = (e) => {
+    setSelectedTable(e.target.value);
   };
 
   const handleEdit = (entry) => {
@@ -104,9 +100,9 @@ const CalEntryTable = () => {
       url = `${DELETE_CAL_STATUS_URL}${id}/`; // Delete URL for Calibration Location
     } else if (selectedTable === 'data') {
       url = `${DELETE_GAUGE_DATA_URL}${id}/`; // Delete URL for Calibration Location
-    } else if (selectedTable === 'data') {
-      url = `${DELETE_CAL_MAILER_URL}${id}/`; // Delete URL for Calibration Location
-    } 
+    } else if (selectedTable === 'mailerlist') {
+      url = `${DELETE_CAL_MAILER_URL}${id}/`; // Delete URL for Calibration Mailer List
+    }
     
     if (url) {
       try {
@@ -141,8 +137,8 @@ const CalEntryTable = () => {
       url = `${UPDATE_CAL_STATUS_URL}${id}/`; // Update URL for Calibration Status
     } else if (selectedTable === 'data') {
       url = `${UPDATE_GAUGE_DATA_URL}${id}/`; // Update URL for Gauge Data
-    } else if (selectedTable === 'data') {
-      url = `${UPDATE_CAL_MAILER_URL}${id}/`; // Update URL for Gauge Data
+    } else if (selectedTable === 'mailerlist') {
+      url = `${UPDATE_CAL_MAILER_URL}${id}/`; // Update URL for Calibration Mailer List
     }
     
     if (url) {
@@ -162,7 +158,6 @@ const CalEntryTable = () => {
     }
   };
 
-  // Handle cancel editing
   const handleCancel = () => {
     setEditingEntry(null);
     setEditedData({});
@@ -184,201 +179,145 @@ const CalEntryTable = () => {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // Define the desired order for the Gauge Data table
-const gaugeDataOrder = ['id', 'gauge_type_id', 'gauge_id_no', 'gauges']; // Replace these with your actual column names
-
-// Reorder columns for the Gauge Data table
-const reorderColumnsForGaugeData = (data, headerNames) => {
-  const reorderedHeaders = gaugeDataOrder.concat(
-    headerNames.filter((header) => !gaugeDataOrder.includes(header))
-  );
-  
-  const reorderedData = data.map((row) => {
-    const reorderedRow = {};
-    reorderedHeaders.forEach((header) => {
-      reorderedRow[header] = row[header];
-    });
-    return reorderedRow;
-  });
-
-  return { reorderedData, reorderedHeaders };
-};
-
-// Check if the column is non-editable (first four columns in Gauge Data)
-const isColumnEditable = (header, index) => {
-  // For Gauge Data table, make the first four columns non-editable
-  if (selectedTable === 'data' && gaugeDataOrder.includes(header) && index < 4) {
-    return false; // Make non-editable
-  }
-  return true; // Other columns are editable
-};
-
-
-// Apply styles to handle large content in specific columns
-const columnStyles = (header) => {
-  const isCalibrationStatus = selectedTable === 'status';
-  
-  // Apply custom styles only for Calibration Certificate Path and Traceability Certificate Path columns
-  if (isCalibrationStatus && (header === 'Calibration Certificate Path' || header === 'Traceability Certificate Path')) {
-    return {
-      whiteSpace: 'normal',
-      wordWrap: 'break-word',
-      minWidth: '300px',  // Adjust this minWidth as needed
-      maxWidth: '600px',  // Adjust this maxWidth as needed
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
+  const renderTable = () => {
+    if (paginatedData.length === 0) {
+      return <p>No data available.</p>;
+    }
+    
+    const isTableOverflowing = (data, headers) => {
+      const maxRowsBeforeOverflow = 10; // Set limit based on your vertical space
+      return data.length > maxRowsBeforeOverflow;
     };
-  }
 
-  return {};  // Default column styles
-}
-
-// Dynamic Table Rendering
-const renderTable = () => {
-  if (paginatedData.length === 0) {
-    return <p>No data available.</p>;
-  }
-
-  // If the selected table is "Gauge Data", reorder the columns
-  let displayedData = paginatedData;
-  let displayedHeaders = tableData.header_names;
-
-  if (selectedTable === 'data') {
-    const reordered = reorderColumnsForGaugeData(paginatedData, tableData.header_names);
-    displayedData = reordered.reorderedData;
-    displayedHeaders = reordered.reorderedHeaders;
-  }
-
-  const isTableOverflowing = (data, headers) => {
-    const maxRowsBeforeOverflow = 10; // Set limit based on your vertical space
-    return data.length > maxRowsBeforeOverflow;
-  };
-  
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '80vh', padding: '10px' }}>
-      {/* Allow horizontal scrolling but avoid vertical scroll */}
-      <div style={{ flexGrow: 1, overflowX: 'auto' }}>
-        <table 
-          className="table table-striped table-bordered"
-          style={{
-            width: '100%',
-            tableLayout: 'auto', // Let table width adjust for overflowed columns
-            fontSize: isTableOverflowing(displayedData, displayedHeaders) ? '0.85rem' : '1rem',
-          }}
-        >
-          <thead>
-            <tr>
-              {displayedHeaders.map((header, index) => (
-                <th
-                  key={index}
-                  style={{
-                    padding: '10px',
-                    whiteSpace: 'nowrap',
-                    ...columnStyles(header) // Apply column-specific styles for header
-                  }}
-                >
-                  {header}
-                </th>
-              ))}
-              <th>Actions</th> {/* Actions column */}
-            </tr>
-          </thead>
-          <tbody>
-            {displayedData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {displayedHeaders.map((header, colIndex) => (
-                  <td
-                    key={colIndex}
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '80vh', padding: '10px' }}>
+        {/* Allow horizontal scrolling but avoid vertical scroll */}
+        <div style={{ flexGrow: 1, overflowX: 'auto' }}>
+          <table 
+            className="table table-striped table-bordered"
+            style={{
+              width: '100%',
+              tableLayout: 'auto', // Let table width adjust for overflowed columns
+              fontSize: isTableOverflowing(paginatedData, tableData.header_names) ? '0.85rem' : '1rem',
+            }}
+          >
+            <thead>
+              <tr>
+                {tableData.header_names.map((header, index) => (
+                  <th
+                    key={index}
                     style={{
                       padding: '10px',
-                      whiteSpace: 'nowrap', // Prevent text wrapping in general
-                      ...columnStyles(header) // Apply column-specific styles for data cell
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {editingEntry === row.id && isColumnEditable(header, colIndex) ? (
-                      <input
-                        type="text"
-                        name={header}
-                        value={editedData[header] || ''}
-                        onChange={handleChange}
-                        className="form-control form-control-sm"
-                        style={{ fontSize: '1rem' }}
-                      />
+                    {header}
+                  </th>
+                ))}
+                <th>Actions</th> {/* Actions column */}
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedData.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {tableData.header_names.map((header, colIndex) => (
+                    <td
+                      key={colIndex}
+                      style={{
+                        padding: '10px',
+                        whiteSpace: 'nowrap', // Prevent text wrapping in general
+                      }}
+                    >
+                      {editingEntry === row.id ? (
+                        <input
+                          type="text"
+                          name={header}
+                          value={editedData[header] || ''}
+                          onChange={handleChange}
+                          className="form-control form-control-sm"
+                          style={{ fontSize: '1rem' }}
+                        />
+                      ) : (
+                        row[header] // Display cell data
+                      )}
+                    </td>
+                  ))}
+                  <td style={{ padding: '10px' }}>
+                    {editingEntry === row.id ? (
+                      <>
+                        <button
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => handleSave(row.id)}
+                          style={{ fontSize: '1rem' }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={handleCancel}
+                          style={{ fontSize: '1rem' }}
+                        >
+                          Cancel
+                        </button>
+                      </>
                     ) : (
-                      row[header] // Display cell data
+                      <>
+                        <BsPencilSquare
+                          className="text-primary mr-2"
+                          onClick={() => handleEdit(row)}
+                          style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                        />
+                        <BsTrash
+                          onClick={() => handleDelete(row.id)}
+                          style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                        />
+                      </>
                     )}
                   </td>
-                ))}
-                <td style={{ padding: '10px' }}>
-                  {editingEntry === row.id ? (
-                    <>
-                      <button
-                        className="btn btn-success btn-sm me-2"
-                        onClick={() => handleSave(row.id)}
-                        style={{ fontSize: '1rem' }}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={handleCancel}
-                        style={{ fontSize: '1rem' }}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <BsPencilSquare
-                        className="text-primary mr-2"
-                        onClick={() => handleEdit(row)}
-                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
-                      />
-                      <BsTrash
-                        onClick={() => handleDelete(row.id)}
-                        style={{ cursor: 'pointer', fontSize: '1.2rem' }}
-                      />
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-      {/* Pagination Controls */}
-      <nav style={{ marginTop: 'auto' }}>
-        <ul className="pagination justify-content-center">
-          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
-          </li>
-          {[...Array(totalPages)].slice(Math.max(0, currentPage - 2), currentPage + 1).map((_, index) => {
-            const page = currentPage - 1 + index;
-            return (
-              <li key={page} className={`page-item ${currentPage === page + 1 ? 'active' : ''}`}>
-                <button className="page-link" onClick={() => handlePageChange(page + 1)}>
-                  {page + 1}
-                </button>
-              </li>
-            );
-          })}
-          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>Next</button>
-          </li>
-          <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => handlePageChange(totalPages)}>Last</button>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  );
-};
+        {/* Pagination Controls */}
+        <nav style={{ marginTop: 'auto' }}>
+          <ul className="pagination justify-content-center">
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => handlePageChange(currentPage - 1)}>Previous</button>
+            </li>
+            {[...Array(totalPages)].slice(Math.max(0, currentPage - 2), currentPage + 1).map((_, index) => {
+              const page = currentPage - 1 + index;
+              return (
+                <li key={page} className={`page-item ${currentPage === page + 1 ? 'active' : ''}`}>
+                  <button className="page-link" onClick={() => handlePageChange(page + 1)}>
+                    {page + 1}
+                  </button>
+                </li>
+              );
+            })}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => handlePageChange(currentPage + 1)}>Next</button>
+            </li>
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button className="page-link" onClick={() => handlePageChange(totalPages)}>Last</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    );
+  };
 
   const handleCreateNewPoint = () => {
     // Navigate to create new point page
     navigate('/cal_agency_newentry', { state: { selectedTable } });
   };
+
+  // const handleCreateNewPoint = () => {
+  //   // Use the selectedTable state to pass it via URL parameters
+  //   const url = `/cal_agency_newentry?table=${selectedTable}`;
+  //   window.open(url, '_blank');  // Open the new page in a new tab/window
+  // };
 
   return (
     <div className="container-fluid mt-2"> {/* Increased margin at the top */}
@@ -386,11 +325,11 @@ const renderTable = () => {
         {/* Dropdown Box */}
         <div className="col-md-3">
           <select className="form-select" value={selectedTable} onChange={handleTableChange}>
-            <option value="calibration">Calibration Agency</option>
+            <option value="data">Gauge Data</option>
+            <option value="status">Calibration Status</option>
             <option value="gauge">Gauge Type</option>
             <option value="location">Calibration Location</option>
-            <option value="status">Calibration Status</option>
-            <option value="data">Gauge Data</option>
+            <option value="calibration">Calibration Agency</option>
             <option value="mailerlist">Mailer List</option>
           </select>
         </div>
@@ -406,13 +345,6 @@ const renderTable = () => {
           />
         </div>
 
-        {/* Show Table Button */}
-        <div className="col-md-2 d-flex justify-content-end">
-          <button className="btn btn-primary btn-sm me-2" onClick={handleShowTable}> {/* Small button size */}
-            Show Table
-          </button>
-        </div>
-
         {/* Create New Point Button */}
         <div className="col-md-2 d-flex justify-content-end">
           <button className="btn btn-secondary btn-sm" onClick={handleCreateNewPoint}> {/* Small button size */}
@@ -422,16 +354,13 @@ const renderTable = () => {
       </div>
 
       {/* Table Section */}
-      {showTable && (
-        <div className="row">
-          <div className="col-12"> {/* Ensures the table takes full width */}
-            {renderTable()}
-          </div>
+      <div className="row">
+        <div className="col-12"> {/* Ensures the table takes full width */}
+          {renderTable()}
         </div>
-      )}
+      </div>
     </div>
-);
-
+  );
 };
 
 export default CalEntryTable;

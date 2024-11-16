@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../../csspage/home.css';
 import { HOME_GET_DATA_URL } from '../../../utils/apiUrls';
+import { HOME_DOWNLOAD_DATA_URL } from '../../../utils/apiUrls';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList } from 'recharts';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -17,7 +18,10 @@ const Home = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [selectedBom, setSelectedBom] = useState(''); // State for selected BOM
   const [selectedESN, setSelectedESN] = useState('');
+  const [selectedArea, setSelectedArea] = useState("Assembly");
+  const handleAreaSelection = (event) => setSelectedArea(event.target.value);
 
+  const [searchText, setSearchText] = useState("");
   const hasFetchedData = useRef(false);
 
   // Fetch data from API
@@ -47,7 +51,20 @@ const Home = () => {
       fetchData(currentYear, currentMonth);
       hasFetchedData.current = true;
     }
+
+    // Set up periodic updates
+    const intervalId = setInterval(() => {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth() + 1;
+      fetchData(currentYear, currentMonth);
+      console.log('Data refreshed at:', new Date());
+    }, 30000); // Update every 30 seconds
+
+    // Clean up interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
+
 
   const handleDateChange = (date) => {
     if (date) {
@@ -57,30 +74,6 @@ const Home = () => {
       fetchData(year, month);
     }
   };
-  // chart for CSR
-//   const prepareChartData = () => {
-//     const esnCountMap = new Map();
-//     const uniqueSet = new Set(); // Track unique entries
-
-//     data_csr.forEach(item => {
-//         const date = item.timestamp.split('T')[0];
-//         const dayNumber = new Date(date).getDate();
-
-//         const uniqueKey = `${dayNumber}-${item.esn}`; // Assuming 'esn' is unique per engine
-//         if (!uniqueSet.has(uniqueKey)) {
-//             uniqueSet.add(uniqueKey);
-//             esnCountMap.set(dayNumber, (esnCountMap.get(dayNumber) || 0) + 1);
-//         }
-//     });
-
-//     const chartData = Array.from(esnCountMap, ([dayNumber, engine_count]) => ({
-//         dayNumber,
-//         "No of Engines": engine_count
-//     }));
-
-//     console.log('CSR Chart Data:', chartData);
-//     return chartData;
-// };
 
   const prepareChartData = () => {
     const esnCountMap = new Map();
@@ -99,24 +92,22 @@ const Home = () => {
     return chartData;
   };
   //  Chart for assembly
-    const prepareAsslyChartData = () => {
-      const esnCountMap = new Map();
-      data_assly.forEach(item => {
-        const date = item.timestamp.split('T')[0];
-        const dayNumber = new Date(date).getDate();
-        esnCountMap.set(dayNumber, (esnCountMap.get(dayNumber) || 0) + 1);
-      });
-  
-      const chartData = Array.from(esnCountMap, ([dayNumber, engine_count]) => ({
-        dayNumber,
-        "No of Engines": engine_count
-      }));
-  
-      console.log('Assembly Chart Data:', chartData);
-      return chartData;
-    };
-  
- 
+  const prepareAsslyChartData = () => {
+    const esnCountMap = new Map();
+    data_assly.forEach(item => {
+      const date = item.timestamp.split('T')[0];
+      const dayNumber = new Date(date).getDate();
+      esnCountMap.set(dayNumber, (esnCountMap.get(dayNumber) || 0) + 1);
+    });
+
+    const chartData = Array.from(esnCountMap, ([dayNumber, engine_count]) => ({
+      dayNumber,
+      "No of Engines": engine_count
+    }));
+
+    console.log('Assembly Chart Data:', chartData);
+    return chartData;
+  }; 
   
   // Chart for Test
   const prepareTestChartData = () => {
@@ -137,16 +128,55 @@ const Home = () => {
   };
 
   // Download data as Excel
-  const handleDownloadExcel = () => {
-    // Prepare the worksheet from the data_xcl array
-    const ws = XLSX.utils.json_to_sheet(data_xcl);
-
-    // Create a new workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Data");
-
-    // Write the workbook to a file
-    XLSX.writeFile(wb, "engine_xcl.xlsx");
+  const handleDownloadExcel = async () => {
+    try {
+      // Prepare the payload
+      const payload = {
+        selectedDate: startDate.toISOString(), // Convert date to ISO string format
+        selectedArea: selectedArea,
+      };
+  
+      // Fetch data from the API
+      const response = await axios.post(HOME_DOWNLOAD_DATA_URL, payload);
+  
+      // Process the response data
+      const data = response.data.data; // Assuming the API returns the data in this structure
+  
+      // Format the data for Excel
+      const formattedData = data.map(item => ({
+        ESN: item.esn,
+        Timestamp: item.timestamp,
+        BOM: item.bom_srno_id__bom,
+      }));
+  
+      // Create a worksheet
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  
+      // Create a workbook and append the worksheet
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+  
+      // Export the workbook as a file
+      const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  
+      // Create a Blob from the Excel buffer
+      const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+  
+      // Generate a download link and trigger the download
+      const link = document.createElement("a");
+      const url = window.URL.createObjectURL(blob);
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Set the desired file name
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+  
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("Failed to download the file. Please try again.");
+    }
   };
 
   // Filter dataset_01 based on selected BOM
@@ -165,6 +195,14 @@ const Home = () => {
     locCounts[item.cur_loc] += item.count || 0; // Default to 0 if count is missing
   }
   });
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value); // Update the search text
+  };
+
+  const filteredBoms = Array.from(new Set(dataset_01.map(item => item.bom)))
+    .filter(bom => bom.toLowerCase().includes(searchText.toLowerCase())); // Filter BOMs based on search text
+
 
   // Extract values for display
   const V_PPC = locCounts[1];
@@ -185,23 +223,46 @@ const Home = () => {
   return (
     <div>       
       <div className="row" >
-        <div className="col-lg-6 col-md-6 col-sm-6 mb-6">
-          <h4>DASHBOARD1</h4>
-        </div>
-        <div className="col-lg-4 col-md-4 col-sm-4 mb-4">
-        {/* Dropdown to select BOM */}
-          <div>
-            <label htmlFor="bom-select">Select BOM:</label>
-            <select id="bom-select" onChange={(e) => setSelectedBom(e.target.value)} value={selectedBom}>
-              <option value="">Select BOM</option>
-              {Array.from(new Set(dataset_01.map(item => item.bom))).map(bom => (
-                <option key={bom} value={bom}>{bom}</option>
-              ))}
-            </select>
-            </div>
+        <div className="col-lg-12 col-md-12 col-sm-12 mb-12">
+          <h4>DASHBOARD</h4>
         </div>
       </div>
-      <div className="row"  style={{ marginRight: '20px', marginLeft: '20px' }}>
+      
+      <div className="row" >
+        <div className="col-lg-12 col-md-4 col-sm-4 mb-4">
+          {/* Dropdown to select BOM */}
+            <label htmlFor="bom-search">Search or Select BOM:</label>
+      
+            {/* Search input to filter the dropdown */}
+            <input
+              type="text"
+              id="bom-search"
+              placeholder="Type to search"
+              value={searchText}
+              onChange={handleSearchChange}
+              autoComplete="off" // Disable the browser's autocomplete
+            />
+      
+            {/* Dropdown with filtered options */}
+            <select
+              id="bom-select"
+              onChange={(e) => setSelectedBom(e.target.value)}
+              value={selectedBom}
+            >
+              <option value="">Select BOM</option>
+              {filteredBoms.map((bom) => (
+                <option key={bom} value={bom}>
+                  {bom}
+                </option>
+              ))}
+            </select>
+        <div>
+    </div>
+ 
+        </div>
+      </div>
+
+      <div className="row">
         <div className="col-lg-2 col-md-2 col-sm-2 mb-2 card h-50">
             <div className="card-body">
               <h5 className="card-title">Trolley Ready</h5>
@@ -258,31 +319,52 @@ const Home = () => {
       </div>
 
 
-      <div>
+      <div className="row-container row">
+      <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
         <DatePicker
           selected={startDate}
           onChange={handleDateChange}
           dateFormat="MMMM yyyy"
           showMonthYearPicker
+          className="datepicker"
         />
-        <button onClick={handleDownloadExcel}>Download Excel</button>
       </div>
+
+      <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
+        <select
+          onChange={handleAreaSelection}
+          value={selectedArea}
+          className="dropdown"
+        >
+          <option value="Assembly">Assembly</option>
+          <option value="Testcell">Testcell</option>
+          <option value="CSR">CSR</option>
+        </select>
+      </div>
+
+      <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
+        <button onClick={handleDownloadExcel} className="download-button">
+          Download Excel
+        </button>
+      </div>
+    </div>
+      
 
       <div style={{ width: '100%', overflowX: 'auto' }}>
         <Carousel>
           <Carousel.Item>
-            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareChartData()}>
+            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="dayNumber" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="No of Engines" fill="#8884d8">
+              <Bar dataKey="No of Engines" fill="#82ca9d">
                 <LabelList dataKey="No of Engines" position="top" />
               </Bar>
             </BarChart>
             <Carousel.Caption className="carousel-caption-top-right">
-              <p>Monthly production from CSR</p>
+              <p>Monthly production from Assembly</p>
             </Carousel.Caption>
           </Carousel.Item>
           <Carousel.Item>
@@ -301,18 +383,18 @@ const Home = () => {
             </Carousel.Caption>
           </Carousel.Item>
           <Carousel.Item>
-            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
+            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareChartData()}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="dayNumber" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="No of Engines" fill="#82ca9d">
+              <Bar dataKey="No of Engines" fill="#8884d8">
                 <LabelList dataKey="No of Engines" position="top" />
               </Bar>
             </BarChart>
             <Carousel.Caption className="carousel-caption-top-right">
-              <p>Monthly production from Assembly</p>
+              <p>Monthly production from CSR</p>
             </Carousel.Caption>
           </Carousel.Item>
         </Carousel>

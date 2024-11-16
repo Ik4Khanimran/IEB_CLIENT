@@ -37,7 +37,7 @@ const NavBar = ({ activeTab }) => {
             <NavDropdown title="Quality" id="quality-nav-dropdown" className={activeTab === 'quality' ? 'active' : ''} drop="end">
               {/* Calibration Dropdown */}
               <NavDropdown title="Calibration" id="calibration-nav-dropdown" className={activeTab === 'calibration' ? 'active' : ''} drop="end">
-                <NavDropdown.Item as={Link} to="/calibration/cal_dashboard" className={activeTab === 'calibration-dashboard' ? 'active' : ''}>
+                <NavDropdown.Item as={Link} to="/cal_dashboard" className={activeTab === 'cal_dashboard' ? 'active' : ''}>
                   Dashboard
                 </NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/cal_hme_report" className={activeTab === 'cal_hme_report' ? 'active' : ''}>

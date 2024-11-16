@@ -88,3 +88,48 @@
   width: 100%;
   height: auto;
 }
+
+.row-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem;
+  gap: 4rem; /* Provides space between columns*/
+} 
+
+.datepicker,
+.dropdown,
+.download-button {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.datepicker {
+  background-color: #fff;
+}
+
+.dropdown {
+  background-color: #f8f9fa;
+}
+
+.download-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.download-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .col-lg-2,
+  .col-md-2,
+  .col-sm-2 {
+    flex: 1 1 100%; /* Full width on smaller screens */
+  }
+}

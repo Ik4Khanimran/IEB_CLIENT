@@ -239,50 +239,71 @@ const CalReport = () => {
 
       {/* Calibration Info Table */}
       <div className="table-wrapper mx-auto">
-  <div className="table-responsive">
-    <table className="table table-bordered text-center align-middle" style={{ tableLayout: "fixed", marginBottom: "0px" }}>
-      <tbody>
-        {/* First row with Calibration Frequency and Gauge Name */}
-        <tr>
-          <td><strong>Calibration Frequency:</strong></td>
-          <td>{frequency || "N/A"}</td>
-          <td><strong>Name of Gauge/Instrument/Equipment:</strong></td>
-          <td>{gauge.gauge_name || "N/A"}</td>
-        </tr>
-
-        {/* Second row with Least Count and Size / Range */}
-        <tr>
-          <td><strong>Least Count:</strong></td>
-          <td>{leastCount || "N/A"}</td>
-          <td><strong>Size / Range:</strong></td>
-          <td>
-            <input type="text" className="form-control form-control-sm" />
-          </td>
-        </tr>
-
-        {/* Third row with Make and GCL ID */}
-        <tr>
-          <td><strong>Make:</strong></td>
-          <td>
-            <input type="text" className="form-control form-control-sm" />
-          </td>
-          <td><strong>GCL ID:</strong></td>
-          <td>
-            <input type="text" className="form-control form-control-sm" />
-          </td>
-        </tr>
-
-        {/* Fourth row with Location and Mfg. ID */}
-        <tr>
-          <td><strong>Location:</strong></td>
-          <td>{gauge.location || "N/A"}</td>
-          <td><strong>Mfg. ID / Sr. No.:</strong></td>
-          <td>{gauge.gauge_id_no || "N/A"}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+        <div className="table-responsive">
+          <table className="table table-bordered text-center align-middle" style={{ tableLayout: "fixed", marginBottom: "0px" }}>
+            <tbody>
+              <tr>
+                <td style={{ width: "20%" }}>
+                  <p>Calibration Frequency:</p>
+                </td>
+                <td colSpan="3">
+                  <p>{frequency}</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p>Name of Gauge/Instrument/Equipment:</p>
+                </td>
+                <td>
+                  <p>{gauge.gauge_name || "N/A"}</p>
+                </td>
+                <td>
+                  <p>Size / Range:</p>
+                </td>
+                <td>
+                  <input type="text" className="form-control form-control-sm" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p>Least Count:</p>
+                </td>
+                <td>
+                  <p>{leastCount}</p>
+                </td>
+                <td>
+                  <p>Make:</p>
+                </td>
+                <td>
+                  <input type="text" className="form-control form-control-sm" />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p>GCL ID:</p>
+                </td>
+                <td>
+                  <input type="text" className="form-control form-control-sm" />
+                </td>
+                <td>
+                  <p>Location:</p>
+                </td>
+                <td>
+                  <p>{gauge.location || "N/A"}</p>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p>Mfg.ID/Sr.No.:</p>
+                </td>
+                <td colSpan="3">
+                  <p>{gauge.gauge_id_no || "N/A"}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Calibration Data Table */}
       <div className="table-wrapper mx-auto">
