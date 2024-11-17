@@ -82,6 +82,8 @@ export const DELETE_GAUGEID_MAIL_URL = `${MAIN_DOMAIN}/${APP_NAMES.Quality}/dele
 export const UPDATE_GAUGEID_MAIL_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/edit_gaugeid_mail/`;
 export const ADD_GAUGEID_MAIL_URL =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/add_gaugeid_mail/`;
 
+export const GET_CALIBRATION_REPORT =  `${MAIN_DOMAIN}/${APP_NAMES.Quality}/get_calibration_report/`;
+
 
 
 // Add more URLs as needed

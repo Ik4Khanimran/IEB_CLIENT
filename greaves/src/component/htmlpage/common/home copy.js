@@ -20,7 +20,6 @@ const Home = () => {
   const [selectedESN, setSelectedESN] = useState('');
   const [selectedArea, setSelectedArea] = useState("Assembly");
   const handleAreaSelection = (event) => setSelectedArea(event.target.value);
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const [searchText, setSearchText] = useState("");
   const hasFetchedData = useRef(false);
@@ -128,67 +127,41 @@ const Home = () => {
     return chartData;
   };
 
-  // Handle carousel selection
-  const handleSelect = (selectedIndex) => {
-    setActiveIndex(selectedIndex); // Update activeIndex based on carousel selection
-  };
-
-  // const prepareChartData = (data) => {
-  //   const esnCountMap = new Map();
-  //   data.forEach(item => {
-  //     const date = item.timestamp.split('T')[0];
-  //     const dayNumber = new Date(date).getDate();
-  //     esnCountMap.set(dayNumber, (esnCountMap.get(dayNumber) || 0) + 1);
-  //   });
-
-  //   return Array.from(esnCountMap, ([dayNumber, engine_count]) => ({
-  //     dayNumber,
-  //     "No of Engines": engine_count
-  //   }));
-  // };
-
+  // Download data as Excel
   const handleDownloadExcel = async () => {
     try {
-      let dataToDownload = [];
-      console.log('Active Index:', activeIndex); 
-
-      // Determine which data to download based on active index
-      if (activeIndex === 0) {
-        console.log("Downloading CSR data: ", dataToDownload);
-        dataToDownload = data_csr;  // CSR data
-      } else if (activeIndex === 1) {
-        dataToDownload = data_assly;  // Assembly data
-        console.log("Downloading Assembly data: ", dataToDownload);
-      } else if (activeIndex === 2) {
-        dataToDownload = data_test;  // Test data
-        console.log("Downloading Test data: ", dataToDownload);
-      }
-
-      if (dataToDownload.length === 0) {
-        alert("No data available for download.");
-        return;
-      }
-
+      // Prepare the payload
+      const payload = {
+        selectedDate: startDate.toISOString(), // Convert date to ISO string format
+        selectedArea: selectedArea,
+      };
+  
+      // Fetch data from the API
+      const response = await axios.post(HOME_DOWNLOAD_DATA_URL, payload);
+  
+      // Process the response data
+      const data = response.data.data; // Assuming the API returns the data in this structure
+  
       // Format the data for Excel
-      const formattedData = dataToDownload.map(item => ({
+      const formattedData = data.map(item => ({
         ESN: item.esn,
         Timestamp: item.timestamp,
         BOM: item.bom_srno_id__bom,
       }));
-
+  
       // Create a worksheet
       const worksheet = XLSX.utils.json_to_sheet(formattedData);
-
+  
       // Create a workbook and append the worksheet
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-
+  
       // Export the workbook as a file
       const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-
+  
       // Create a Blob from the Excel buffer
       const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-
+  
       // Generate a download link and trigger the download
       const link = document.createElement("a");
       const url = window.URL.createObjectURL(blob);
@@ -197,7 +170,7 @@ const Home = () => {
       document.body.appendChild(link);
       link.click();
       link.remove();
-
+  
       // Clean up the URL object
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -205,7 +178,6 @@ const Home = () => {
       alert("Failed to download the file. Please try again.");
     }
   };
-  
 
   // Filter dataset_01 based on selected BOM
   const filteredDataset = selectedBom
@@ -231,13 +203,6 @@ const Home = () => {
   const filteredBoms = Array.from(new Set(dataset_01.map(item => item.bom)))
     .filter(bom => bom.toLowerCase().includes(searchText.toLowerCase())); // Filter BOMs based on search text
 
-  // Function to export data to Excel
-  const exportToExcel = (data, filename) => {
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, filename);
-  };
 
   // Extract values for display
   const V_PPC = locCounts[1];
@@ -370,7 +335,7 @@ const Home = () => {
         />
       </div>
 
-      {/* <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
+      <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
         <select
           onChange={handleAreaSelection}
           value={selectedArea}
@@ -380,7 +345,7 @@ const Home = () => {
           <option value="Testcell">Testcell</option>
           <option value="CSR">CSR</option>
         </select>
-      </div> */}
+      </div>
 
       <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
         <button onClick={handleDownloadExcel} className="download-button">
@@ -390,8 +355,8 @@ const Home = () => {
     </div>
       
 
-    <div style={{ width: '100%', overflowX: 'auto' }}>
-        <Carousel activeIndex={activeIndex} onSelect={(index) => setActiveIndex(index)}>
+      <div style={{ width: '100%', overflowX: 'auto' }}>
+        <Carousel>
           <Carousel.Item>
             <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -405,9 +370,6 @@ const Home = () => {
             </BarChart>
             <Carousel.Caption className="carousel-caption-top-right">
               <p>Monthly production from Assembly</p>
-              <button onClick={() => exportToExcel(data_assly, 'assembly_data.xlsx')}>
-              Download Data
-            </button>
             </Carousel.Caption>
           </Carousel.Item>
           <Carousel.Item>
@@ -442,14 +404,6 @@ const Home = () => {
           </Carousel.Item>
         </Carousel>
       </div>
-      
-      {/* Button to download the displayed data
-      <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
-        <button onClick={handleDownloadExcel} className="download-button">
-          Download Excel
-        </button>
-      </div> */}
-
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "../../csspage/cal_report.css"; 
+import "../../csspage/cal_report.css";
 import { useLocation } from "react-router-dom"; 
 import axios from "axios"; 
 import { GET_CAL_REPORT_RESULT_URL, GET_LEAST_COUNT_FREQ_URL } from "../../../utils/apiUrls"; 
@@ -33,6 +33,7 @@ const CalReportResult = () => {
     const fetchCalibrationData = async () => {
       try {
         const response = await axios.get(`${GET_CAL_REPORT_RESULT_URL}?gauge_id=${gaugeId}`);
+        console.log("Calibration data response:", response.data); // Log the full response
         if (response.data) {
           setCalibrationDate(response.data.last_cal_date || "N/A");
           setNextCalibrationDate(response.data.next_cal_date || "N/A");
@@ -71,9 +72,29 @@ const CalReportResult = () => {
 
   // Helper function to generate full file URL
   const getFullFileUrl = (filePath) => {
-    if (filePath === "N/A") return "N/A";
-    const fullUrl = `${process.env.REACT_APP_API_URL}/media/${filePath}`;
-    console.log("Generated file URL:", fullUrl); // Add logging to see the generated URL
+    if (filePath === "N/A" || !filePath) return "N/A"; // Handle N/A cases
+  
+    // Define the base directory of the media folder (this should be the relative path to your media folder)
+    const baseDir = 'D:/Server_Folders/IEB_Server/Greaves/Cal_Report'; // This is just an example, replace with your base directory
+  
+    // Ensure that baseDir ends with a slash for consistency
+    let normalizedBaseDir = baseDir.replace(/\\/g, '/'); // Convert backslashes to forward slashes
+    if (!normalizedBaseDir.endsWith('/')) {
+      normalizedBaseDir += '/'; // Add the slash if necessary
+    }
+  
+    // Remove the base directory from the file path to get the relative path
+    let relativeFilePath = filePath.replace(normalizedBaseDir, '').replace(/\\/g, '/'); // Normalize backslashes to forward slashes
+  
+    // Ensure there is a leading slash between the media URL and the relative file path
+    if (!relativeFilePath.startsWith('/')) {
+      relativeFilePath = '/' + relativeFilePath;
+    }
+  
+    // Generate the full URL with the '/media' prefix
+    const fullUrl = `http://localhost:8000/media${relativeFilePath}`;
+  
+    console.log("Generated file URL:", fullUrl); // Log for debugging
     return fullUrl;
   };
 
