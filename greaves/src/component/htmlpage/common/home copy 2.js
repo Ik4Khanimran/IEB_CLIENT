@@ -373,32 +373,10 @@ const Home = () => {
       
 
     <div style={{ width: '100%', overflowX: 'auto' }}>
-    <Carousel activeIndex={activeIndex} onSelect={(index) => setActiveIndex(index)}>
+  <Carousel activeIndex={activeIndex} onSelect={(index) => setActiveIndex(index)}>
     <Carousel.Item>
-    <div style={{ textAlign: 'center', position: 'relative', display: 'flex', justifyContent:'center' }}>
+      <div style={{ textAlign: 'center', position: 'relative' }}>
 
-    <div
-      style={{
-        position: 'absolute',
-        left: 80,
-        top: -5,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'center', // Vertically center the text
-        justifyContent: 'center', // Horizontally center the text
-        width: '50px', // Adjust width for space allocation
-        color: '#000', // Adjust text color as needed
-        fontWeight: 'bold',
-        fontSize: '18px', // Adjust font size
-        textAlign: 'center', // Center align text within its container
-        writingMode: 'horizontal-tb', // Ensure horizontal alignment
-        backgroundColor: 'transparent', // Optional: Add a background color for testing
-      }}
-    >
-      Monthly production from Assembly
-    </div>
-
-        <div style={{ paddingLeft: '50px', width: 'fit-content' }}>
         <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="dayNumber" />
@@ -409,12 +387,15 @@ const Home = () => {
             <LabelList dataKey="No of Engines" position="top" />
           </Bar>
         </BarChart>
-       
+        <Carousel.Caption className="carousel-caption-top-right">
+              <p>Monthly production from Assembly</p>
+              </Carousel.Caption>
+        {/* Positioned Button below X-axis label, with adjusted position */}
         <button 
           style={{
             position: 'absolute',
             bottom: '-2px',   // Move the button closer to the X-axis label (adjust as needed)
-            left: '60%',      // Center the button horizontally
+            left: '50%',      // Center the button horizontally
             transform: 'translateX(-50%)',  // Correct for exact centering
             backgroundColor: '#007bff',
             color: '#fff',
@@ -429,34 +410,10 @@ const Home = () => {
           Download Data
         </button>
       </div>
-      </div>
-     
     </Carousel.Item>
 
     <Carousel.Item>
-    <div style={{ textAlign: 'center', position: 'relative', display: 'flex', justifyContent:'center' }}>
-
-    <div
-      style={{
-        position: 'absolute',
-        left: 80,
-        top: -5,
-        bottom: 0,
-        display: 'flex',
-        alignItems: 'center', // Vertically center the text
-        justifyContent: 'center', // Horizontally center the text
-        width: '50px', // Adjust width for space allocation
-        color: '#000', // Adjust text color as needed
-        fontWeight: 'bold',
-        fontSize: '18px', // Adjust font size
-        textAlign: 'center', // Center align text within its container
-        writingMode: 'horizontal-tb', // Ensure horizontal alignment
-        backgroundColor: 'transparent', // Optional: Add a background color for testing
-      }}
-    >
-      Monthly production from Testing
-    </div>
-
+      <div style={{ textAlign: 'center', position: 'relative' }}>
         <BarChart width={window.innerWidth * 0.7} height={300} data={prepareTestChartData()}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="dayNumber" />
@@ -475,7 +432,7 @@ const Home = () => {
           style={{
             position: 'absolute',
             bottom: '-2px',   // Move the button closer to the X-axis label (adjust as needed)
-            left: '60%',      // Center the button horizontally
+            left: '50%',      // Center the button horizontally
             transform: 'translateX(-50%)',  // Correct for exact centering
             backgroundColor: '#007bff',
             color: '#fff',
@@ -493,29 +450,7 @@ const Home = () => {
     </Carousel.Item>
 
     <Carousel.Item>
-    <div style={{ textAlign: 'center', position: 'relative', display: 'flex', justifyContent:'center' }}>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: 80,
-          top: -5,
-          bottom: 0,
-          display: 'flex',
-          alignItems: 'center', // Vertically center the text
-          justifyContent: 'center', // Horizontally center the text
-          width: '50px', // Adjust width for space allocation
-          color: '#000', // Adjust text color as needed
-          fontWeight: 'bold',
-          fontSize: '18px', // Adjust font size
-          textAlign: 'center', // Center align text within its container
-          writingMode: 'horizontal-tb', // Ensure horizontal alignment
-          backgroundColor: 'transparent', // Optional: Add a background color for testing
-        }}
-      >
-        Monthly production from CSR
-      </div>
-
+      <div style={{ textAlign: 'center', position: 'relative' }}>
         <BarChart width={window.innerWidth * 0.7} height={300} data={prepareChartData()}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="dayNumber" />
@@ -534,7 +469,7 @@ const Home = () => {
           style={{
             position: 'absolute',
             bottom: '-2px',   // Move the button closer to the X-axis label (adjust as needed)
-            left: '60%',      // Center the button horizontally
+            left: '50%',      // Center the button horizontally
             transform: 'translateX(-50%)',  // Correct for exact centering
             backgroundColor: '#007bff',
             color: '#fff',
