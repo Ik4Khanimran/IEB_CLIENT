@@ -1,3 +1,8 @@
+
+
+//static chart
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import '../../csspage/home.css';
@@ -245,20 +250,22 @@ const Home = () => {
   const V_Trolley = locCounts[5];
   const V_A_Inprocess = locCounts[10];
   // const V_A_Rework = locCounts[12];
-  const V_A_Rework = 1;
+  const V_A_Rework = 15;
   const V_A_Quality = locCounts[14];
   const V_T_Inprocess = locCounts[20];
   // const V_T_Rework = locCounts[22];
-  const V_T_Rework = 1;
+  const V_T_Rework = 17;
   const V_T_Quality = locCounts[24]; 
   // const V_CSR_Inprocess = locCounts[30];
   const V_CSR_Inprocess = 25;
-  const V_CSR_Rework = 0;
+  const V_CSR_Rework = 13;
   const V_CSR_Qualitycheck = 0;
   // const V_CSR_Rework = locCounts[32];
   // const V_CSR_Qualitycheck = locCounts[35];
-  const V_Packaging_Inprocess = locCounts[40];
-  const V_FG = locCounts[42];
+  // const V_Packaging_Inprocess = locCounts[40];
+  const V_Packaging_Inprocess = 2;
+  // const V_FG = locCounts[42];
+  const V_FG =0;
 
   return (
     <div>       
@@ -369,86 +376,73 @@ const Home = () => {
           className="datepicker"
         />
       </div>
-
-      {/* <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
-        <select
-          onChange={handleAreaSelection}
-          value={selectedArea}
-          className="dropdown"
-        >
-          <option value="Assembly">Assembly</option>
-          <option value="Testcell">Testcell</option>
-          <option value="CSR">CSR</option>
-        </select>
-      </div> */}
-
-      {/* <div className="col-lg-2 col-md-2 col-sm-2 mb-2">
-        <button onClick={handleDownloadExcel} className="download-button">
-          Download Excel
-        </button>
-      </div> */}
-    </div>
-      
-
-    <div style={{ width: '100%', overflowX: 'auto' }}>
-        <Carousel activeIndex={activeIndex} onSelect={(index) => setActiveIndex(index)}>
-          <Carousel.Item>
-            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="dayNumber" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="No of Engines" fill="#82ca9d">
-                <LabelList dataKey="No of Engines" position="top" />
-              </Bar>
-            </BarChart>
-            <Carousel.Caption className="carousel-caption-top-right">
-              <p>Monthly production from Assembly</p>
-              <button onClick={() => exportToExcel(data_assly, 'assembly_data.xlsx')}>
-              Download Data
-            </button>
-            </Carousel.Caption>
-          </Carousel.Item>
-          <Carousel.Item>
-            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareTestChartData()}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="dayNumber" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="No of Engines" fill="#d0a9f5">
-                <LabelList dataKey="No of Engines" position="top" />
-              </Bar>
-            </BarChart>
-            <Carousel.Caption className="carousel-caption-top-right">
-              <p>Monthly production from Testing</p>
-              <button onClick={() => exportToExcel(data_test, 'testing_data.xlsx')}>
-              Download Data
-            </button>
-            </Carousel.Caption>
-          </Carousel.Item>
-          <Carousel.Item>
-            <BarChart width={window.innerWidth * 0.7} height={300} data={prepareChartData()}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="dayNumber" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="No of Engines" fill="#8884d8">
-                <LabelList dataKey="No of Engines" position="top" />
-              </Bar>
-            </BarChart>
-            <Carousel.Caption className="carousel-caption-top-right">
-              <p>Monthly production from CSR</p>
-              <button onClick={() => exportToExcel(data_csr, 'csr_data.xlsx')}>
-              Download Data
-            </button>
-            </Carousel.Caption>
-          </Carousel.Item>
-        </Carousel>
       </div>
       
+
+      <div style={{ width: '100%', overflowX: 'auto' }}>
+        <Carousel activeIndex={activeIndex} onSelect={(index) => setActiveIndex(index)}>
+          <Carousel.Item>
+          <div style={{ textAlign: 'center', position: 'relative', display: 'flex', justifyContent:'center' }}>
+
+          <div
+            style={{
+              position: 'absolute',
+              left: 80,
+              top: -5,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center', // Vertically center the text
+              justifyContent: 'center', // Horizontally center the text
+              width: '50px', // Adjust width for space allocation
+              color: '#000', // Adjust text color as needed
+              fontWeight: 'bold',
+              fontSize: '18px', // Adjust font size
+              textAlign: 'center', // Center align text within its container
+              writingMode: 'horizontal-tb', // Ensure horizontal alignment
+              backgroundColor: 'transparent', // Optional: Add a background color for testing
+            }}
+          >
+            Monthly production from Assembly
+          </div>
+
+              <div style={{ paddingLeft: '50px', width: 'fit-content' }}>
+              <BarChart width={window.innerWidth * 0.7} height={300} data={prepareAsslyChartData()}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="dayNumber" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="No of Engines" fill="#82ca9d">
+                  <LabelList dataKey="No of Engines" position="top" />
+                </Bar>
+              </BarChart>
+            
+              <button 
+                style={{
+                  position: 'absolute',
+                  bottom: '-2px',   // Move the button closer to the X-axis label (adjust as needed)
+                  left: '60%',      // Center the button horizontally
+                  transform: 'translateX(-50%)',  // Correct for exact centering
+                  backgroundColor: '#007bff',
+                  color: '#fff',
+                  border: 'none',
+                  padding: '5px 10px',  // Smaller padding for compact button
+                  fontSize: '12px',     // Smaller font size
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+                onClick={() => exportToExcel(data_assly, 'assembly_data.xlsx')}
+              >
+                Download Data
+              </button>
+            </div>
+            </div>
+          
+          </Carousel.Item>
+
+          
+        </Carousel>
+      </div>
 
     </div>
   );

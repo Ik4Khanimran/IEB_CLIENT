@@ -1,8 +1,8 @@
 // apiUrls.js 
 
-const MAIN_DOMAIN = 'http://127.0.0.1:8000';
+// const MAIN_DOMAIN = 'http://127.0.0.1:8000';
 //const MAIN_DOMAIN = 'http://localhost:81';
-// const MAIN_DOMAIN = 'http://10.24.0.104:81';           //build
+const MAIN_DOMAIN = 'http://10.24.0.104:81';           //build
 // const MAIN_DOMAIN = 'http://localhost:8000';
 
 const APP_NAMES = {
